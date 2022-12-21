@@ -17,7 +17,6 @@ class Trades(db.Model):
 @app.route('/', methods=['POST', 'GET'])
 def index():
     if request.method == "POST":
-        pass
         return "Hello"
     else:
         return render_template('index.html')
