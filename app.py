@@ -1,11 +1,10 @@
 from flask import Flask, render_template, request, redirect, url_for
-from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db' #config test.db file at relative location
 db = SQLAlchemy(app) #initialize database with settings from app
-
 
 #models
 class Trades(db.Model):
