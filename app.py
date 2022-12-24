@@ -12,7 +12,7 @@ class Trades(db.Model):
     date = db.Column(db.DateTime, default=datetime.utcnow)
     asset = db.Column(db.String(200), nullable=False)
     price = db.Column(db.Float, nullable=False)
-    size = db.Column(db.Float, nullable=False)
+    qty = db.Column(db.Float, nullable=False)
     value = db.Column(db.Float)
     notes = db.Column(db.String(1000))
     img = db.Column(db.String(200))
