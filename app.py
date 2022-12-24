@@ -7,18 +7,20 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db' #config test.db file
 db = SQLAlchemy(app) #initialize database with settings from app
 
 #models
-class Trades(db.Model):
+class Trade(db.Model):
+    __tablename__ = 'trades'
     _id = db.Column(db.Integer, primary_key=True)
-    date = db.Column(db.DateTime, default=datetime.utcnow)
+    date = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    type = db.Column(db.String(10), nullable=False)
     asset = db.Column(db.String(200), nullable=False)
     price = db.Column(db.Float, nullable=False)
     qty = db.Column(db.Float, nullable=False)
-    value = db.Column(db.Float)
-    notes = db.Column(db.String(1000))
-    img = db.Column(db.String(200))
+    value = db.Column(db.Float, nullable=False)
+    notes = db.Column(db.String(1000), nullable=True)
+    img = db.Column(db.String(200), nullable=True)
 
-    def __init__(self):
-        self.value = price * size
+    def __repr__(self):
+        return '<Trade> %r' % self._id
 
 #routes
 @app.route('/', methods=['POST', 'GET'])

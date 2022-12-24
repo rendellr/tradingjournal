@@ -1,14 +1,14 @@
 import csv
 from datetime import datetime
+from app import Trade, db
 
 
 def import_csv(filename):
-
     with open(filename, 'r') as csvfile:
 
         csvreader = csv.DictReader(csvfile)
 
-        trades = [] # date, type, asset, price, qty
+        trades = []  # date, type, asset, price, qty
         for row in csvreader:
             trades.append(row)
 
@@ -22,24 +22,26 @@ def import_csv(filename):
 
         # process data and save to database
         for trade in trades:
-
-            # convert entries to correct data type
+            # convert values to correct data type
             price = float(trade['price'])
             qty = float(trade['qty'])
-            date = datetime.strptime(trade['date'], "%Y-%m-%d")
             value = round(price * qty, 2)
+            notes = 'notes text'
+            img = 'https://s3.tradingview.com/g/G1EOg7dj_mid.png'
 
-            print (date, price, qty, value)
-            # _id
-            # date
-            # asset
-            # price
-            # qty
-            # value
-            # notes
-            # img
+            # print (date, price, qty, value)
 
+            # create db entry
+            entry = Trade(
+                date=datetime.strptime(trade['date'], "%Y-%m-%d"),
+                type=trade['type'],
+                asset=trade['asset'].upper(),
+                price=price,
+                qty=qty,
+                value=value,
+                notes=notes,
+                img=img,
+            )
 
-
-
-
+            db.session.add(entry)
+            db.session.commit()
