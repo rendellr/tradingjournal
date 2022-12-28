@@ -1,26 +1,20 @@
-from flask import Flask, render_template, request, redirect, url_for
-from datetime import datetime
+from flask import Flask, render_template, request, redirect, url_for, flash
+from werkzeug.utils import secure_filename
 from flask_sqlalchemy import SQLAlchemy
+from tools import import_csv, allowed_file
+from datetime import datetime
+from models import Trade, setup_db, db_drop_and_create
+import os
+
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db' #config test.db file at relative location
-db = SQLAlchemy(app) #initialize database with settings from app
+#db = SQLAlchemy(app) #initialize database with settings from app
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db' #config test.db file at relative location
+#app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.secret_key = '12345'
+app.config['UPLOAD_FOLDER'] = 'uploads'
+app.config['MAX_CONTENT_LENGTH'] = 1 * 1000 * 1000 #sets max filesize to 1mb
 
-#models
-class Trade(db.Model):
-    __tablename__ = 'trades'
-    _id = db.Column(db.Integer, primary_key=True)
-    date = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
-    type = db.Column(db.String(10), nullable=False)
-    asset = db.Column(db.String(200), nullable=False)
-    price = db.Column(db.Float, nullable=False)
-    qty = db.Column(db.Float, nullable=False)
-    value = db.Column(db.Float, nullable=False)
-    notes = db.Column(db.String(1000), nullable=True)
-    img = db.Column(db.String(200), nullable=True)
-
-    def __repr__(self):
-        return '<Trade> %r' % self._id
 
 #routes
 @app.route('/', methods=['POST', 'GET'])
@@ -28,7 +22,34 @@ def dashboard():
     if request.method == "POST":
         return "Hello"
     else:
-        return render_template('dashboard.html')
+        trades = Trade.query.order_by(Trade.date).all()
+        return render_template('dashboard.html', trades=trades)
+
+@app.route('/importcsv', methods=['POST', 'GET'])
+def importcsv():
+
+    if request.method == "POST":
+        # check to see if post request has the file part form form input, else
+        if 'formFile' not in request.files:
+            flash('Form lacking File part')
+            return redirect(request.url)
+
+        file = request.files['formFile']
+
+        if file.filename == '':
+            flash('No file selected')
+            return redirect(request.url)
+
+        if '.' in file.filename and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(filename)
+            import_csv(filename)
+            os.remove(filename)
+            flash('Trade data uploaded')
+            return redirect(url_for('dashboard'))
+
+    return render_template('importcsv.html')
+
 
 # Example of redirect
 # @app.route('/admin')
@@ -45,7 +66,8 @@ def dashboard():
 # def admin():
 #     return redirect(url_for('user', name="Admin!")) # redirects to user and passes name to user function
 
-
 if __name__ == "__main__":
+    setup_db(app)
+    db_drop_and_create(app)
     app.run(debug=True)
 

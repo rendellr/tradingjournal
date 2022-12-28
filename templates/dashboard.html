@@ -38,35 +38,33 @@
             <tr>
               <th scope="col">#</th>
               <th scope="col">Date</th>
+              <th scope="col">Type</th>
               <th scope="col">Asset</th>
               <th scope="col">Price</th>
               <th scope="col">Position Size</th>
               <th scope="col">Value</th>
               <th scope="col">Setup & Notes</th>
               <th scope="col">Setup Image</th>
+              <th scope="col">Actions</th>
             </tr>
           </thead>
           <tbody class="table-group-divider">
-            <tr>
-              <th scope="row">1</th>
-              <td>Mark</td>
-              <td>Otto</td>
-              <td>@mdo</td>
-              <td>Mark</td>
-              <td>Otto</td>
-              <td>@mdo</td>
-              <td>@mdo</td>
-            </tr>
-            <tr>
-              <th scope="row">2</th>
-              <td>Jacob</td>
-              <td>Thornton</td>
-              <td>@fat</td>
-              <td>Mark</td>
-              <td>Otto</td>
-              <td>@mdo</td>
-              <td>@mdo</td>
-            </tr>
+            {% for trade in trades %}
+              <tr>
+                <td scope="row">{{ trade._id }}</td>
+                <td>{{ trade.date }}</td>
+                <td>{{ trade.type }}</td>
+                <td>{{ trade.asset }}</td>
+                <td>{{ trade.price }}</td>
+                <td>{{ trade.qty }}</td>
+                <td>{{ trade.value }}</td>
+                <td>{{ trade.notes }}</td>
+                <td>{{ trade.img }}</td>
+                <td>
+                  <a href="/">Edit</a>
+                </td>
+              </tr>
+            {% endfor %}
           </tbody>
         </table>
       </div>
@@ -74,4 +72,7 @@
     </div>
 </div>
 {% endblock %}
+
+{% block modal %}{% endblock %}
+
 

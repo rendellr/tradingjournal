@@ -1,9 +1,14 @@
 import csv
 from datetime import datetime
-from app import Trade, db
+from models import Trade, db
 
+ALLOWED_EXTENSIONS = {"csv"}
+
+def allowed_file(filename):
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def import_csv(filename):
+
     with open(filename, 'r') as csvfile:
 
         csvreader = csv.DictReader(csvfile)
@@ -12,13 +17,15 @@ def import_csv(filename):
         for row in csvreader:
             trades.append(row)
 
-        # If list is empty or keys do not match header, return error string
         header = ['date', 'type', 'asset', 'price', 'qty']
         print(header)
         print(trades[0].keys())
 
-        if len(trades) == 0: return 'csv file is empty'
-        if list(trades[0]) != header: return 'data format incorrect'
+        # If list is empty or keys do not match header, return error string
+        if len(trades) == 0:
+            return 'csv file is empty'
+        if list(trades[0]) != header:
+            return 'data format incorrect'
 
         # process data and save to database
         for trade in trades:
@@ -29,7 +36,7 @@ def import_csv(filename):
             notes = 'notes text'
             img = 'https://s3.tradingview.com/g/G1EOg7dj_mid.png'
 
-            # print (date, price, qty, value)
+            #print(price, qty, value)
 
             # create db entry
             entry = Trade(
@@ -45,3 +52,6 @@ def import_csv(filename):
 
             db.session.add(entry)
             db.session.commit()
+
+    return
+
