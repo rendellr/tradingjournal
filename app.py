@@ -1,16 +1,11 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from werkzeug.utils import secure_filename
-from flask_sqlalchemy import SQLAlchemy
 from tools import import_csv, allowed_file
-from datetime import datetime
 from models import Trade, setup_db, db_drop_and_create
 import os
 
 
 app = Flask(__name__)
-#db = SQLAlchemy(app) #initialize database with settings from app
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db' #config test.db file at relative location
-#app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = '12345'
 app.config['UPLOAD_FOLDER'] = 'uploads'
 app.config['MAX_CONTENT_LENGTH'] = 1 * 1000 * 1000 #sets max filesize to 1mb
@@ -68,6 +63,6 @@ def importcsv():
 
 if __name__ == "__main__":
     setup_db(app)
-    db_drop_and_create(app)
+    db_drop_and_create(app) #clear and initialize new db on app start
     app.run(debug=True)
 

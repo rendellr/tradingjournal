@@ -39,12 +39,10 @@
               <th scope="col">#</th>
               <th scope="col">Date</th>
               <th scope="col">Type</th>
-              <th scope="col">Asset</th>
+              <th scope="col">Symbol</th>
               <th scope="col">Price</th>
               <th scope="col">Position Size</th>
               <th scope="col">Value</th>
-              <th scope="col">Setup & Notes</th>
-              <th scope="col">Setup Image</th>
               <th scope="col">Actions</th>
             </tr>
           </thead>
@@ -54,12 +52,15 @@
                 <td scope="row">{{ trade._id }}</td>
                 <td>{{ trade.date }}</td>
                 <td>{{ trade.type }}</td>
-                <td>{{ trade.asset }}</td>
+                <td>{{ trade.symbol }}</td>
                 <td>{{ trade.price }}</td>
                 <td>{{ trade.qty }}</td>
                 <td>{{ trade.value }}</td>
-                <td>{{ trade.notes }}</td>
-                <td>{{ trade.img }}</td>
+<!--                <td>-->
+<!--                    <a href="#tradeimg{{ trade._id }}" data-bs-target="#tradeimg{{ trade._id }}" data-bs-toggle="modal">-->
+<!--                      <img class="img" src="{{ trade.img }}" width="50">-->
+<!--                    </a>-->
+<!--                </td>-->
                 <td>
                   <a href="/">Edit</a>
                 </td>
@@ -68,9 +69,26 @@
           </tbody>
         </table>
       </div>
-
     </div>
 </div>
+
+<!-- Trade image modal -->
+{% for trade in trades%}
+  <div class="modal" id="tradeimg{{trade._id}}" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title fs-5">Setup for Trade {{trade._id}}</h3>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body text-center">
+            <img class="img-fluid" src="{{ trade.img }}" data-bs-toggle="modal">
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endfor %}
 {% endblock %}
 
 {% block modal %}{% endblock %}

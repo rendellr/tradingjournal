@@ -1,4 +1,4 @@
-date,type,asset,price,qty
+date,type,symbol,price,qty
 2022-06-01,Deposit,USDT,1,25000
 2022-06-10,Buy,NOR 3rd Aspect #80,500,1
 2022-06-17,Buy,NOR 3rd Aspect #533,323,1
