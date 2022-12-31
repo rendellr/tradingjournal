@@ -60,16 +60,15 @@ def import_csv(filename):
 # Add trade new trade to position, update position id with new data
 def add_trade(trade):
 
-    direction = {'Buy': 1, 'Sell': -1}
-
-    # if no open trades exist, create new position, commit to db, return
+    dir = {'Buy': 1, 'Sell': -1}
+    # if no open positions exist, create new position, commit to db, return
     if not Position.query.filter_by(symbol=trade.symbol, status='Open').all():
         position = Position(
             date_open=trade.date,
             status='Open',
             symbol=trade.symbol,
             cost_basis=trade.price,
-            qty=trade.qty*direction[trade.type],
+            qty=trade.qty*dir[trade.type],
             net_cost=trade.price*trade.qty,
             notes='',
             img=trade.img,
@@ -84,27 +83,28 @@ def add_trade(trade):
         return
 
     # else an open trade exists, link new trade to position, update position data, return
-    else :
+    else:
+
         # if open pos != 1, return error msg
         if Position.query.filter_by(symbol=trade.symbol, status='Open').count() != 1:
-            print('error, open position qty mismatch')
+            print('ERROR: open position qty mismatch')
 
         openpos = Position.query.filter_by(symbol=trade.symbol, status='Open').first()
-
+        new_qty = openpos.qty + trade.qty * dir[trade.type]
         # If new trade reduces qty past 0, throw error about selling/buying more than available
 
         # If new trade reduces qty to 0 or , update position data and set status to "Closed"
-        if openpos.qty + trade.qty * direction[trade.type] == 0:
+        if new_qty == 0:
             print(f'Trade quantity zero, closing position {openpos}')
             openpos.qty = 0
-            openpos.cost_basis = 0
+            openpos.cost_basis = 0 #???
             openpos.status = 'Closed'
         else:
             print(f'Adding {trade} to {openpos}')
             openpos.cost_basis = (openpos.cost_basis * openpos.qty + trade.price * trade.qty) / (openpos.qty + trade.qty)
-            openpos.qty += trade.qty * direction[trade.type] # adjust pos qty based on trade direction
+            openpos.qty += trade.qty * dir[trade.type]  # adjust pos qty based on trade direction
 
-        openpos.net_cost = trade.price * trade.qty * direction[trade.type]
+        openpos.net_cost = trade.price * trade.qty * dir[trade.type]
         trade.position_id = openpos._id # add trade as child to open position
         db.session.commit()
         return

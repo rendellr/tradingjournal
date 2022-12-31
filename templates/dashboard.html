@@ -27,10 +27,18 @@
     </div>
 </div>
 
-<!-- Trades Data Table-->
+<!-- Positions Table Gridjs-->
+<div class="p-3 mb-4 bg-light border rounded-3">
+  <div id="table"></div>
+<!--    <div class="container-fluid py-5 ">-->
+<!--      <h3 class="display-5 fw-bold">Positions</h3>-->
+<!--    </div>-->
+</div>
+
+<!-- Trades Table -->
 <div class="p-3 bg-light border rounded-3">
     <div class="container-fluid py-5 ">
-      <h1 class="display-5 fw-bold">Trades Table</h1>
+      <h3 class="display-5 fw-bold">Trades</h3>
 
       <div class="table-responsive">
         <table class="table table-dark table-hover">
@@ -53,7 +61,7 @@
                 <td>{{ trade.date }}</td>
                 <td>{{ trade.type }}</td>
                 <td>{{ trade.symbol }}</td>
-                <td>{{ trade.price }}</td>
+                <td>{{ "${:,.2f}".format(trade.price) }}</td>
                 <td>{{ trade.qty }}</td>
                 <td>{{ trade.value }}</td>
 <!--                <td>-->
@@ -73,24 +81,58 @@
 </div>
 
 <!-- Trade image modal -->
-{% for trade in trades%}
-  <div class="modal" id="tradeimg{{trade._id}}" aria-hidden="true">
-    <div class="modal-dialog modal-xl">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h3 class="modal-title fs-5">Setup for Trade {{trade._id}}</h3>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body text-center">
-            <img class="img-fluid" src="{{ trade.img }}" data-bs-toggle="modal">
+  {% for trade in trades %}
+    <div class="modal" id="tradeimg{{trade._id}}" aria-hidden="true">
+      <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3 class="modal-title fs-5">Setup for Trade {{trade._id}}</h3>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body text-center">
+              <img class="img-fluid" src="{{ trade.img }}" data-bs-toggle="modal">
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-{% endfor %}
+  {% endfor %}
 {% endblock %}
 
-{% block modal %}{% endblock %}
+{% block javascript %}
+<!--  {{ super() }}-->
+  <script>
+    new gridjs.Grid({
+    columns: [
+      { id: 'date_open', name: 'Date' },
+      { id: 'status', name: 'Status' },
+      { id: 'symbol', name: 'Symbol' },
+      { id: 'qty', name: 'Quantity' },
+      { id: 'cost_basis', name: 'Cost Basis' },
+      { id: 'net_cost', name: 'Net Cost' },
+      { id: 'notes', name: 'Notes' },
+      { id: 'img', name: 'Image' },
+    ],
+    data: [
+      {% for position in positions %}
+        {
+          date_open: '{{ position.date_open }}',
+          status: '{{ position.status }}',
+          symbol: '{{ position.symbol }}',
+          qty: '{{ position.qty|round(6) }}',
+          cost_basis: '{{ "${:,.2f}".format(position.cost_basis) }}',
+          net_cost: '{{ "${:,.2f}".format(position.net_cost) }}',
+          notes: '{{ position.notes }}',
+          img: '{{ position.img }}',
+        },
+      {% endfor %}
+    ],
+    search: true,
+    sort: true,
+    pagination: true,
+    }).render(document.getElementById('table'));
+  </script>
+{% endblock %}
+
 
 

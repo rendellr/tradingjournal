@@ -1,8 +1,9 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from werkzeug.utils import secure_filename
 from tools import import_csv, allowed_file
-from models import Trade, setup_db, db_drop_and_create
+from models import Trade, Position, setup_db, db_drop_and_create
 import os
+from sqlalchemy import desc
 
 
 app = Flask(__name__)
@@ -18,7 +19,8 @@ def dashboard():
         return "Hello"
     else:
         trades = Trade.query.order_by(Trade.date).all()
-        return render_template('dashboard.html', trades=trades)
+        positions = Position.query.order_by(desc(Position.status), Position.date_open).all()
+        return render_template('dashboard.html', trades=trades, positions=positions)
 
 @app.route('/importcsv', methods=['POST', 'GET'])
 def importcsv():
