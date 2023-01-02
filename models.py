@@ -20,11 +20,15 @@ class Position(db.Model):
     _id = db.Column(db.Integer, primary_key=True)
     trades = db.relationship('Trade', backref='trade')
     date_open = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
-    status = db.Column(db.String(10), default='Open', nullable=False)
-    symbol = db.Column(db.String(200), nullable=False)
-    cost_basis = db.Column(db.Float, nullable=False)
-    qty = db.Column(db.Float, nullable=False)
+    status = db.Column(db.String(10), default='Open', nullable=False)  # Open, Closed
+    symbol = db.Column(db.String(200), nullable=False)  # Asset symbol
+    entry = db.Column(db.Float, nullable=False)  # Average entry price
+    size = db.Column(db.Float, nullable=False) #  total position size in shares/contract before any profit taking
     net_cost = db.Column(db.Float, nullable=False)
+    qty = db.Column(db.Float, nullable=False)  # current position quantity
+    exit = db.Column(db.Float)  # Average exit price
+    pnl = db.Column(db.Float)  # Average profit or loss
+    direction = db.Column(db.String(10))
     notes = db.Column(db.String(1000), default='')
     img = db.Column(db.String(200), default='')
 

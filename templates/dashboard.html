@@ -22,7 +22,7 @@
 <!-- Portfolio Value Graph-->
 <div class="p-3 mb-4 bg-light border rounded-3">
     <div class="container-fluid py-5">
-      <h1 class="display-5 fw-bold">Portolio Value Chart</h1>
+      <h1 class="display-5 fw-bold">Portfolio Value Chart</h1>
       <button class="btn btn-primary btn-lg" type="button">Example button</button>
     </div>
 </div>
@@ -104,32 +104,40 @@
   <script>
     new gridjs.Grid({
     columns: [
-      { id: 'date_open', name: 'Date' },
       { id: 'status', name: 'Status' },
+      { id: 'date_open', name: 'Date' },
       { id: 'symbol', name: 'Symbol' },
       { id: 'qty', name: 'Quantity' },
-      { id: 'cost_basis', name: 'Cost Basis' },
-      { id: 'net_cost', name: 'Net Cost' },
+      { id: 'entry', name: 'Entry' },
+      { id: 'exit', name: 'Exit' },
+      { id: 'pnl', name: 'Return' },
+      { id: 'direction', name: 'Side' },
       { id: 'notes', name: 'Notes' },
-      { id: 'img', name: 'Image' },
+      { id: 'img', name: 'Image' }
     ],
     data: [
       {% for position in positions %}
         {
-          date_open: '{{ position.date_open }}',
           status: '{{ position.status }}',
+          date_open: '{{ position.date_open }}',
           symbol: '{{ position.symbol }}',
           qty: '{{ position.qty|round(6) }}',
-          cost_basis: '{{ "${:,.2f}".format(position.cost_basis) }}',
-          net_cost: '{{ "${:,.2f}".format(position.net_cost) }}',
+          entry: '{{ "${:,.2f}".format(position.entry) }}',
+          exit: '{{ "${:,.2f}".format(position.exit) }}',
+          pnl: '{{ "${:,.2f}".format(position.pnl) }}',
+          direction: '{{ position.direction }}',
           notes: '{{ position.notes }}',
-          img: '{{ position.img }}',
+          img: '{{ position.img }}'
         },
       {% endfor %}
     ],
     search: true,
     sort: true,
     pagination: true,
+
+    className: {
+      table: 'table table-striped table-hover'
+    }
     }).render(document.getElementById('table'));
   </script>
 {% endblock %}
