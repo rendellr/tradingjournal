@@ -1,7 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from werkzeug.utils import secure_filename
-from tools import import_csv, allowed_file
+from tools import import_csv, allowed_file, add_trade
 from models import Trade, Position, setup_db, db_drop_and_create
+from forms import AddTradeForm
 import os
 from sqlalchemy import desc
 
@@ -15,12 +16,27 @@ app.config['MAX_CONTENT_LENGTH'] = 1 * 1000 * 1000 #sets max filesize to 1mb
 #routes
 @app.route('/', methods=['POST', 'GET'])
 def dashboard():
-    if request.method == "POST":
-        return "Hello"
+    form_add_trade = AddTradeForm()
+    if request.method == "POST" and form_add_trade.validate():
+        new_trade = Trade(
+            date=form.date,
+            type=form.type,
+            symbol=form.symbol.upper(),
+            price=form.price,
+            qty=form.qty,
+            value=form.value,
+            img=form.img
+        )
+
+        # #print(entry.symbol)
+        add_trade(new_trade)
+        db.session.add(new_trade)
+        db.session.commit()
+        redirect('dashboard')
     else:
         trades = Trade.query.order_by(Trade.date).all()
         positions = Position.query.order_by(desc(Position.status), Position.date_open).all()
-        return render_template('dashboard.html', trades=trades, positions=positions)
+        return render_template('dashboard.html', trades=trades, positions=positions, form=form_add_trade)
 
 @app.route('/importcsv', methods=['POST', 'GET'])
 def importcsv():

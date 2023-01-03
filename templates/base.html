@@ -30,7 +30,7 @@
                 New Trade
               </a>
 
-              <!-- New Trade Modal -->
+              <!-- Add Trade Modal -->
               <div class="modal fade" id="newTradeModal" tabindex="-1" aria-labelledby="newTradeModalLabel" aria-hidden="true">
                 <div class="modal-dialog">
                   <div class="modal-content">
@@ -39,11 +39,19 @@
                       <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                      TRADE FORM
+                      <form id="addtradeForm" method="POST" action="/">
+                        <div>Trade Date: {{ form.date }}</div>
+                        <div>Type: {{ form.type}}</div>
+                        <div>Symbol: {{ form.symbol}}</div>
+                        <div>Price: {{ form.price }}</div>
+                        <div>Quantity: {{ form.qty }}</div>
+                        <div>Value: {{ form.value }}</div>
+                        <div>Image: {{ form.img }}</div>
+                      </form>
                     </div>
                     <div class="modal-footer">
                       <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                      <button type="button" class="btn btn-primary">Save changes</button>
+                      <button type="submit" class="btn btn-primary" form="addtradeForm">Add Trade</button>
                     </div>
                   </div>
                 </div>

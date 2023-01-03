@@ -15,9 +15,6 @@ with app.app_context():
         print('Add Sell')
 
 
-
-
-
 def new_position(symbol):
     pass
     # if symbol in Trade.query.filter_by(symbol=symbol):

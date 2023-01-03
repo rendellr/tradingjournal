@@ -29,6 +29,7 @@
 
 <!-- Positions Table Gridjs-->
 <div class="p-3 mb-4 bg-light border rounded-3">
+  <h3 class="display-5 fw-bold">Positions</h3>
   <div id="table"></div>
 <!--    <div class="container-fluid py-5 ">-->
 <!--      <h3 class="display-5 fw-bold">Positions</h3>-->
@@ -81,20 +82,20 @@
 </div>
 
 <!-- Trade image modal -->
-  {% for trade in trades %}
-    <div class="modal" id="tradeimg{{trade._id}}" aria-hidden="true">
-      <div class="modal-dialog modal-xl">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h3 class="modal-title fs-5">Setup for Trade {{trade._id}}</h3>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body text-center">
-              <img class="img-fluid" src="{{ trade.img }}" data-bs-toggle="modal">
-          </div>
-        </div>
-      </div>
-    </div>
+<!--  {% for trade in trades %}-->
+<!--    <div class="modal" id="tradeimg{{trade._id}}" aria-hidden="true">-->
+<!--      <div class="modal-dialog modal-xl">-->
+<!--        <div class="modal-content">-->
+<!--          <div class="modal-header">-->
+<!--            <h3 class="modal-title fs-5">Setup for Trade {{trade._id}}</h3>-->
+<!--            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>-->
+<!--          </div>-->
+<!--          <div class="modal-body text-center">-->
+<!--              <img class="img-fluid" src="{{ trade.img }}" data-bs-toggle="modal">-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </div>-->
 
   {% endfor %}
 {% endblock %}

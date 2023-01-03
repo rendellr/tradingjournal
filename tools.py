@@ -97,7 +97,9 @@ def add_trade(trade):
         if dir[trade.type] == openpos.direction:
             openpos.entry = (openpos.entry * openpos.size + trade.price * trade.qty) / (openpos.size + trade.qty)
             openpos.size += trade.qty
+            openpos.qty += trade.qty
             openpos.net_cost += trade.qty * trade.price
+            print(f'Adding {trade.qty} {trade.symbol} to {openpos}')
 
         # If trade direction != position direction, calc new avg exit and return, check if position closed
         else:
@@ -106,6 +108,7 @@ def add_trade(trade):
             openpos.exit = (openpos.exit * sold_qty + trade.price * trade.qty) / (sold_qty + trade.qty)
             openpos.pnl = trade.qty * (trade.price - openpos.entry) * pnl_dir[openpos.direction]
             openpos.qty -= trade.qty
+            print(f'Reducing {openpos} by {trade.qty} {trade.symbol}. Return of {openpos.pnl}')
 
             # If new trade reduces qty to 0, update position data and set status to "Closed"
             if openpos.qty == 0:
@@ -113,8 +116,6 @@ def add_trade(trade):
                 openpos.status = 'Closed'
 
             # If new trade reduces qty past 0, throw error about selling/buying more than available
-
-        print(f'Adding {trade} to {openpos}')
 
         trade.position_id = openpos._id # add trade as child to open position
         db.session.commit()
