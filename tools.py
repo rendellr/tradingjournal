@@ -9,7 +9,7 @@ def allowed_file(filename):
 
 
 def import_csv(filename):
-
+    dateformat = "%Y-%m-%d"
     with open(filename, 'r') as csvfile:
 
         csvreader = csv.DictReader(csvfile)
@@ -31,17 +31,15 @@ def import_csv(filename):
         # process data and save to database
         for trade in trades:
             # convert values to correct data type
-            price = float(trade['price'])
+            price = float(trade['price'].replace("$", ""))
             qty = float(trade['qty'])
             value = round(price * qty, 2)
             # notes = 'notes text'
             # img = 'https://s3.tradingview.com/g/G1EOg7dj_mid.png'
 
-            #print(price, qty, value)
-
             # create db entry
             new_trade = Trade(
-                date=datetime.strptime(trade['date'], "%Y-%m-%d"),
+                date=datetime.strptime(trade['date'], dateformat),
                 type=trade['type'],
                 symbol=trade['symbol'].upper(),
                 price=price,
@@ -82,7 +80,6 @@ def add_trade(trade):
         db.session.commit()
         trade.position_id = position._id #add position relationship to trade entry
         db.session.commit()
-
         return
 
     # if an open trade exists, link new trade to position, update position data, return
@@ -93,25 +90,29 @@ def add_trade(trade):
 
         openpos = Position.query.filter_by(symbol=trade.symbol, status='Open').first()
 
-        # If trade direction == position direction, update size and calc new avg entry
+        # If trade direction == position direction, recalc size and avg entry
         if dir[trade.type] == openpos.direction:
             openpos.entry = (openpos.entry * openpos.size + trade.price * trade.qty) / (openpos.size + trade.qty)
-            openpos.size += trade.qty
-            openpos.qty += trade.qty
+            openpos.size += trade.qty  # total position size !! assumes open and close trades happen in succession
+            openpos.qty += trade.qty  # current pos qty remaining
             openpos.net_cost += trade.qty * trade.price
             print(f'Adding {trade.qty} {trade.symbol} to {openpos}')
 
-        # If trade direction != position direction, calc new avg exit and return, check if position closed
+        # If trade direction != position direction, recalc avg exit and pnl, check if position closed
         else:
             pnl_dir = {'Long': 1, 'Short': -1}
             sold_qty = openpos.size - openpos.qty
             openpos.exit = (openpos.exit * sold_qty + trade.price * trade.qty) / (sold_qty + trade.qty)
-            openpos.pnl = trade.qty * (trade.price - openpos.entry) * pnl_dir[openpos.direction]
-            openpos.qty -= trade.qty
+            openpos.pnl += trade.qty * (trade.price - openpos.entry) * pnl_dir[openpos.direction]
+            openpos.qty -= trade.qty  # current pos qty remaining
             print(f'Reducing {openpos} by {trade.qty} {trade.symbol}. Return of {openpos.pnl}')
 
-            # If new trade reduces qty to 0, update position data and set status to "Closed"
-            if openpos.qty == 0:
+            # If new trade reduces qty to "effective 0", update position data and set status to "Closed"
+            # due to trading fees we often see mismatch b/w in & out qtys, i.e qty may not equal exact 0
+            # if remaining position value is less than threshold_value, position is closed
+            threshold_value = 20
+
+            if openpos.qty * trade.price < threshold_value:
                 print(f'Trade quantity zero, closing position {openpos}')
                 openpos.status = 'Closed'
 

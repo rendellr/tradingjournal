@@ -25,13 +25,7 @@ def dashboard():
 
 @app.route('/importcsv', methods=['POST', 'GET'])
 def importcsv():
-
     if request.method == "POST":
-        # check to see if post request has the file part form form input, else
-        if 'formFile' not in request.files:
-            flash('Form lacking File part')
-            return redirect(request.url)
-
         file = request.files['formFile']
 
         if file.filename == '':
@@ -75,6 +69,7 @@ def add():
         add_trade(new_trade)
         db.session.add(new_trade)
         db.session.commit()
+        flash('New trade added.')
         return redirect(url_for('dashboard'))
     print('FORM NOT VALIDATED')
     return redirect(url_for('dashboard'))
