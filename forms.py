@@ -4,10 +4,10 @@ from wtforms.validators import DataRequired, Length
 from datetime import datetime
 
 class AddTradeForm(FlaskForm):
-    date = DateTimeLocalField('date', default=datetime.now(), validators=[DataRequired()])
-    type = SelectField('type', choices=['Buy', 'Sell'], validators=[DataRequired()])
-    symbol = StringField('symbol', validators=[DataRequired(), Length(max=10)])
-    price = FloatField('price', validators=[DataRequired()])
-    qty = FloatField('qty', validators=[DataRequired()])
-    value = FloatField('value', validators=[DataRequired()])
-    img = StringField('symbol')
+    date = DateTimeLocalField('Date', default=datetime.now(), validators=[DataRequired()])
+    type = SelectField('Type', choices=['Buy', 'Sell'], validators=[DataRequired()], default="Buy")
+    symbol = StringField('Symbol', validators=[DataRequired(), Length(max=10)], default="ETH")
+    price = FloatField('Price', validators=[DataRequired()], default=1000)
+    qty = FloatField('Quantity', validators=[DataRequired()], default=1)
+    value = FloatField('Value', validators=[DataRequired()], default=1000)
+    img = StringField('Image')

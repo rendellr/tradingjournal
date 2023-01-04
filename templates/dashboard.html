@@ -65,11 +65,11 @@
                 <td>{{ "${:,.2f}".format(trade.price) }}</td>
                 <td>{{ trade.qty }}</td>
                 <td>{{ trade.value }}</td>
-<!--                <td>-->
-<!--                    <a href="#tradeimg{{ trade._id }}" data-bs-target="#tradeimg{{ trade._id }}" data-bs-toggle="modal">-->
-<!--                      <img class="img" src="{{ trade.img }}" width="50">-->
-<!--                    </a>-->
-<!--                </td>-->
+<!--<td>-->
+<!--  <a href="#tradeimg{{ trade._id }}" data-bs-target="#tradeimg{{ trade._id }}" data-bs-toggle="modal"> -->
+<!--    <img class="img" src="{{ trade.img }}" width="50"> -->
+<!--  </a>-->
+<!--</td>-->
                 <td>
                   <a href="/">Edit</a>
                 </td>
@@ -96,8 +96,7 @@
 <!--        </div>-->
 <!--      </div>-->
 <!--    </div>-->
-
-  {% endfor %}
+<!--  {% endfor %}-->
 {% endblock %}
 
 {% block javascript %}
