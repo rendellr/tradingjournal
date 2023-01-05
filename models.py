@@ -21,7 +21,8 @@ class Position(db.Model):
     trades = db.relationship('Trade', backref='trade')
     date_open = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     status = db.Column(db.String(10), default='Open', nullable=False)  # Open, Closed
-    symbol = db.Column(db.String(200), nullable=False)  # Asset symbol
+    symbol = db.Column(db.String(50), nullable=False)  # Asset symbol
+    coin_id = db.Column(db.String(50))  # coin_id is the id used by coin gecko; needed for scraping live prices
     entry = db.Column(db.Float, nullable=False)  # Average entry price
     size = db.Column(db.Float, nullable=False) #  total position size in shares/contract before any profit taking
     net_cost = db.Column(db.Float, nullable=False)
@@ -43,7 +44,7 @@ class Trade(db.Model):
     position_id = db.Column(db.Integer, db.ForeignKey('position._id'))
     date = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     type = db.Column(db.String(10), nullable=False)
-    symbol = db.Column(db.String(200), nullable=False)
+    symbol = db.Column(db.String(50), nullable=False)
     price = db.Column(db.Float, nullable=False)
     qty = db.Column(db.Float, nullable=False)
     value = db.Column(db.Float, nullable=False)

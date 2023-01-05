@@ -1,12 +1,15 @@
 import csv
+import json
 from datetime import datetime
 from models import Trade, Position, db
+from bs4 import BeautifulSoup
+import requests
+import json
 
 ALLOWED_EXTENSIONS = {"csv"}
 
 def allowed_file(filename):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
-
 
 def import_csv(filename):
     dateformat = "%Y-%m-%d"
@@ -61,6 +64,7 @@ def add_trade(trade):
 
     # if no open positions exist, create new position, commit to db, return
     if not Position.query.filter_by(symbol=trade.symbol, status='Open').all():
+
         position = Position(
             date_open=trade.date,
             status='Open',
@@ -75,6 +79,7 @@ def add_trade(trade):
             notes='',
             img=trade.img,
         )
+
         print(f'No trade exists, creating {position}, {position.symbol}, qty: {position.qty} ')
         db.session.add(position)
         db.session.commit()
@@ -121,3 +126,48 @@ def add_trade(trade):
         trade.position_id = openpos._id # add trade as child to open position
         db.session.commit()
         return
+
+def update_coin_id():
+    # Takes asset symbols from positions db and finds corresponding coin gecko ids used for scraping live prices
+
+    url = 'https://api.coingecko.com/api/v3/coins/list?include_platform=false'
+    json_data = requests.get(url).json()
+
+    for i in json_data:
+        if i['symbol'].lower() == trade.symbol.lower():
+            coin_id = i['id']
+            query = Position.query.orderby(Position.symbol).all()
+            print(query)
+            print(type(query))
+            for i in query:
+                print(query)
+            break
+
+    return coin_list
+
+
+
+    # COINMARKETCAP ATTEMPT - COULDN'T easily get
+    # cmc = requests.get('https://coinmarketcap.com/')
+    # print(cmc.status_code)  # 200
+    # soup = BeautifulSoup(cmc.content, 'html.parser')
+    #
+    # data = soup.find('script', id="__NEXT_DATA__", type="application/json")  #CMC data stored as json in script tag
+    # json_data = json.loads(data.contents[0])
+    #
+    # # cmc obfuscates their coin data, requiring some extraction and mapping list indexes with keys
+    # # coin_list returns a list where entry 0 is a dict of key arrays: coin_list[0] = {'keysArr': [price, name, etc]}
+    # # remaining entries are lists of values, matching the index of the keysArr. We need slug, symbol, and  keys.
+    # json_table_data = json.loads(json_data['props']['initialState'])
+    # coin_list = json_table_data['cryptocurrency']['listingLatest']['data']
+    # slug_index = coin_list[0]['keysArr'].index('slug')
+    # symbol_index = coin_list[0]['keysArr'].index('symbol')
+    #
+    # for i in range(len(coin_list))
+    #
+    # coins = {}
+    #
+    # for i in coin_data:
+    #     coin_data['symbol']
+
+

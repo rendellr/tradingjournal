@@ -1,10 +1,10 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from werkzeug.utils import secure_filename
-from tools import import_csv, allowed_file, add_trade
+from tools import import_csv, allowed_file, add_trade, update_coin_id
 from models import Trade, Position, db, setup_db, db_drop_and_create
 from forms import AddTradeForm
 import os
-from sqlalchemy import desc
+from sqlalchemy import desc, func
 
 
 app = Flask(__name__)
@@ -21,7 +21,8 @@ def dashboard():
     else:
         trades = Trade.query.order_by(Trade.date).all()
         positions = Position.query.order_by(desc(Position.status), Position.date_open).all()
-        return render_template('dashboard.html', trades=trades, positions=positions)
+        pnl = Position.query.with_entities(db.func.sum(Position.pnl)).all()
+        return render_template('dashboard.html', trades=trades, positions=positions, pnl=pnl)
 
 @app.route('/importcsv', methods=['POST', 'GET'])
 def importcsv():
@@ -54,7 +55,6 @@ def add():
     if form.validate_on_submit():
         print('FORM VALIDATED')
 
-
         new_trade = Trade(
             date=form.date.data,
             type=form.type.data,
@@ -73,6 +73,15 @@ def add():
         return redirect(url_for('dashboard'))
     print('FORM NOT VALIDATED')
     return redirect(url_for('dashboard'))
+
+@app.route('/test', methods=["GET"])
+def test():
+    if request.method == "POST":
+        return 'REQUEST ERROR /TEST'
+
+    print(update_coin_id())
+    return redirect(url_for('dashboard'))
+
 
 # Example of redirect
 # @app.route('/admin')
