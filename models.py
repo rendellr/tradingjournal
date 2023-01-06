@@ -25,11 +25,12 @@ class Position(db.Model):
     coin_id = db.Column(db.String(50))  # coin_id is the id used by coin gecko; needed for scraping live prices
     entry = db.Column(db.Float, nullable=False)  # Average entry price
     size = db.Column(db.Float, nullable=False) #  total position size in shares/contract before any profit taking
-    net_cost = db.Column(db.Float, nullable=False)
+    # net_cost = db.Column(db.Float, nullable=False)
     qty = db.Column(db.Float, nullable=False)  # current position quantity
     exit = db.Column(db.Float)  # Average exit price
     pnl = db.Column(db.Float)  # Average profit or loss
     direction = db.Column(db.String(10))
+    current_price = db.Column(db.Float)
     notes = db.Column(db.String(1000), default='')
     img = db.Column(db.String(200), default='')
 

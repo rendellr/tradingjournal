@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from werkzeug.utils import secure_filename
-from tools import import_csv, allowed_file, add_trade, update_coin_id
+from tools import import_csv, allowed_file, add_trade, get_coin_ids, get_current_price
 from models import Trade, Position, db, setup_db, db_drop_and_create
 from forms import AddTradeForm
 import os
@@ -21,8 +21,9 @@ def dashboard():
     else:
         trades = Trade.query.order_by(Trade.date).all()
         positions = Position.query.order_by(desc(Position.status), Position.date_open).all()
-        pnl = Position.query.with_entities(db.func.sum(Position.pnl)).all()
-        return render_template('dashboard.html', trades=trades, positions=positions, pnl=pnl)
+        if trades:
+            current_prices =  get_current_price()
+        return render_template('dashboard.html', trades=trades, positions=positions)
 
 @app.route('/importcsv', methods=['POST', 'GET'])
 def importcsv():
@@ -79,7 +80,7 @@ def test():
     if request.method == "POST":
         return 'REQUEST ERROR /TEST'
 
-    print(update_coin_id())
+    print(get_coin_ids())
     return redirect(url_for('dashboard'))
 
 
