@@ -101,6 +101,6 @@ def test():
 
 if __name__ == "__main__":
     setup_db(app)
-    db_drop_and_create(app) #clear and initialize new db on app start
+    # db_drop_and_create(app) #clear and initialize new db on app start
     app.run(debug=True)
 

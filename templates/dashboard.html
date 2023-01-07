@@ -27,9 +27,28 @@
     </div>
 </div>
 
+<!-- Positions Table bootstrap-table-->
+<div class="p-3 mb-4 bg-light border rounded-3">
+  <h3 class="display-5 fw-bold">Positions Bootstrap Table</h3>
+  <table id="posTable">
+    <thead>
+      <tr>
+        <th>Status</th>
+        <th>Date Opened</th>
+        <th data-field="symbol">Symbol</th>
+        <th data-field="entry">Entry</th>
+        <th data-field="exit">Exit</th>
+        <th data-field="pnl">Return</th>
+        <th data-field="price">Price</th>
+        <th data-field="direction">Direction</th>
+      </tr>
+    </thead>
+  </table>
+</div>
+
 <!-- Positions Table Gridjs-->
 <div class="p-3 mb-4 bg-light border rounded-3">
-  <h3 class="display-5 fw-bold">Positions</h3>
+  <h3 class="display-5 fw-bold">Positions Gridjs</h3>
 <!--  Total Return = {{ pnl }}-->
   <div id="table"></div>
 <!--    <div class="container-fluid py-5 ">-->
@@ -102,47 +121,88 @@
 
 {% block javascript %}
 <!--  {{ super() }}-->
-  <script>
-    new gridjs.Grid({
-    columns: [
-      { id: 'status', name: 'Status' },
-      { id: 'date_open', name: 'Date' },
-      { id: 'symbol', name: 'Symbol' },
-      { id: 'size', name: 'Size' },
-      { id: 'qty', name: 'Quantity' },
-      { id: 'entry', name: 'Entry' },
-      { id: 'exit', name: 'Exit' },
-      { id: 'pnl', name: 'Return' },
-      { id: 'direction', name: 'Side' },
-      { id: 'notes', name: 'Notes' },
-      { id: 'current_price', name: 'Price' }
-    ],
-    data: [
-      {% for position in positions %}
-        {
-          status: '{{ position.status }}',
-          date_open: '{{ position.date_open }}',
-          symbol: '{{ position.symbol }}',
-          size: '{{ position.size|round(6) }}',
-          qty: '{{ position.qty|round(6) }}',
-          entry: '{{ "${:,.3f}".format(position.entry) }}',
-          exit: '{{ "${:,.3f}".format(position.exit) }}',
-          pnl: '{{ "${:,.3f}".format(position.pnl) }}',
-          direction: '{{ position.direction }}',
-          notes: '{{ position.notes }}',
-          current_price: '{{ "${:,.3f}".format(position.current_price) }}'
-        },
-      {% endfor %}
-    ],
-    search: true,
-    sort: true,
-    pagination: true,
+<script src="https://unpkg.com/bootstrap-table@1.21.2/dist/bootstrap-table.min.js"></script>
+<script>
 
-    className: {
-      table: 'table table-striped table-hover'
-    }
-    }).render(document.getElementById('table'));
-  </script>
+$('#posTable').bootstrapTable({
+  columns: [{
+    field: 'status',
+    title: 'Status'
+  }, {
+    field: 'date_open',
+    title: 'Date Opened'
+  }, {
+    field: 'symbol',
+    title: 'Symbol'
+  }, {
+    field: 'entry',
+    title: 'Entry'
+  }, {
+    field: 'exit',
+    title: 'Exit'
+  }, {
+    field: 'pnl',
+    title: 'Return'
+  }, {
+    field: 'price',
+    title: 'Price'
+  }, {
+    field: 'direction',
+    title: 'Direction'
+  }],
+
+  data: [
+    {% for p in positions %}
+      {
+        status: '{{ p.status }}',
+        date_open: '{{ p.date_open }}',
+        symbol: '{{ p.symbol }}',
+        entry: '{{ "${:,.3f}".format(p.entry) }}',
+        exit: '{{ "${:,.3f}".format(p.exit) }}',
+        pnl: '{{ "${:,.3f}".format(p.pnl) }}',
+        price: '{{ "${:,.3f}".format(p.qty * (p.current_price - p.entry)) }}',
+        direction: '{{ p.direction }}'
+      },
+    {% endfor %}
+    ]
+})
+</script>
+
+<script>
+  new gridjs.Grid({
+  columns: [
+    { id: 'status', name: 'Status' },
+    { id: 'date_open', name: 'Date' },
+    { id: 'symbol', name: 'Symbol' },
+    { id: 'size', name: 'Size' },
+    { id: 'entry', name: 'Entry' },
+    { id: 'exit', name: 'Exit' },
+    { id: 'pnl', name: 'Realized' },
+    { id: 'price', name: 'Price' },
+    { id: 'direction', name: 'Side' },
+  ],
+  data: [
+    {% for p in positions %}
+      {
+        status: '{{ p.status }}',
+        date_open: '{{ p.date_open }}',
+        symbol: '{{ p.symbol }}',
+        size: '{{ p.size|round(6) }}',
+        entry: '{{ "${:,.3f}".format(p.entry) }}',
+        exit: '{{ "${:,.3f}".format(p.exit) }}',
+        pnl: '{{ "${:,.3f}".format(p.pnl) }}',
+        price: '{{ "${:,.3f}".format(p.qty * (p.current_price - p.entry)) }}',
+        direction: '{{ p.direction }}',
+      },
+    {% endfor %}
+  ],
+
+  search: true,
+  sort: true,
+  pagination: true,
+
+  }).render(document.getElementById('table'));
+</script>
 {% endblock %}
 
 
