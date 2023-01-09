@@ -4,7 +4,7 @@ from tools import import_csv, allowed_file, add_trade, get_coin_ids, get_current
 from models import Trade, Position, db, setup_db, db_drop_and_create
 from forms import AddTradeForm
 import os
-from sqlalchemy import desc, func
+from sqlalchemy import desc, func, case
 
 
 app = Flask(__name__)
@@ -20,10 +20,58 @@ def dashboard():
         return "HELLO"
     else:
         trades = Trade.query.order_by(Trade.date).all()
-        positions = Position.query.order_by(desc(Position.status), Position.date_open).all()
+        positions = Position.query.order_by(case([(Position.status=='Open', 0)], else_=1), desc(Position.date_open)).all()
+        columns = [
+            {
+                'field': 'status',
+                'title': 'Status'
+            },
+            {
+                'field': 'date_open',
+                'title': 'Date Opened'
+            },
+            {
+                'field': 'symbol',
+                'title': 'Symbol'
+            },
+            {
+                'field': 'entry',
+                'title': 'Entry'
+            },
+            {
+                'field': 'exit',
+                'title': 'Exit'
+            },
+            {
+                'field': 'pnl',
+                'title': 'Return'
+            },
+            {
+                'field': 'price',
+                'title': 'Price'
+            },
+            {
+                'field': 'direction',
+                'title': 'Direction'
+            }
+        ]
+        pos_data = []
         if trades:
             current_prices =  get_current_price()
-        return render_template('dashboard.html', trades=trades, positions=positions)
+        for count, p in enumerate(positions):
+            pos_data.append(
+                {
+                    'status': p.status,
+                    'date_open': p.date_open,
+                    'symbol': p.symbol,
+                    'entry': p.entry,
+                    'exit': p.exit,
+                    'pnl': p.pnl,
+                    'price': p.qty * (p.current_price - p.entry),
+                    'direction': p.direction
+                }
+            )
+        return render_template('dashboard.html', trades=trades, positions=positions, data=pos_data, columns=columns)
 
 @app.route('/importcsv', methods=['POST', 'GET'])
 def importcsv():
@@ -84,6 +132,13 @@ def test():
     return redirect(url_for('dashboard'))
 
 
+if __name__ == "__main__":
+    setup_db(app)
+    # db_drop_and_create(app) #clear and initialize new db on app start
+    app.run(debug=True)
+
+
+
 # Example of redirect
 # @app.route('/admin')
 # def admin():
@@ -98,9 +153,3 @@ def test():
 # @app.route('/admin')
 # def admin():
 #     return redirect(url_for('user', name="Admin!")) # redirects to user and passes name to user function
-
-if __name__ == "__main__":
-    setup_db(app)
-    # db_drop_and_create(app) #clear and initialize new db on app start
-    app.run(debug=True)
-

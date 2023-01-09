@@ -5,14 +5,14 @@
 <div class="row">
     <div class="col-md-6 mb-4">
       <div class="h-100 p-3 text-bg-dark rounded-3">
-        <h2>Portfolio Stats</h2>
+        <h2 class="fw-bold">Portfolio Stats</h2>
         <p>Value, Number of Trades, Win Rate, Short vs Long</p>
         <button class="btn btn-outline-light" type="button">Example button</button>
       </div>
     </div>
     <div class="col-md-6 mb-4">
       <div class="h-100 p-3 bg-light border rounded-3">
-        <h2>Open Positions Pie Chart</h2>
+        <h2 class="fw-bold">Open Positions Pie Chart</h2>
         <p></p>
         <button class="btn btn-outline-secondary" type="button">Example button</button>
       </div>
@@ -22,24 +22,33 @@
 <!-- Portfolio Value Graph-->
 <div class="p-3 mb-4 bg-light border rounded-3">
     <div class="container-fluid py-5">
-      <h1 class="display-5 fw-bold">Portfolio Value Chart</h1>
+      <h3 class="fw-bold">Portfolio Value Chart</h3>
       <button class="btn btn-primary btn-lg" type="button">Example button</button>
     </div>
 </div>
 
 <!-- Positions Table bootstrap-table-->
 <div class="p-3 mb-4 bg-light border rounded-3">
-  <h3 class="display-5 fw-bold">Positions Bootstrap Table</h3>
-  <table id="posTable">
+  <h3 class="fw-bold">Positions</h3>
+  <div class="toolbar"></div>
+  <table
+    id="pos-table"
+    data-toggle="true"
+    data-show-columns="true"
+    data-show-refresh="true"
+    data-buttons="buttons"
+    data-pagination="true"
+    class="table-sm table-bordered"
+    >
     <thead>
       <tr>
-        <th>Status</th>
-        <th>Date Opened</th>
+        <th data-field="status" data-formatter="statusFormatter">Status</th>
+        <th data-field="date_open">Date Opened</th>
         <th data-field="symbol">Symbol</th>
         <th data-field="entry">Entry</th>
         <th data-field="exit">Exit</th>
-        <th data-field="pnl">Return</th>
         <th data-field="price">Price</th>
+        <th data-field="pnl" data-formatter="pnlFormatter">Return</th>
         <th data-field="direction">Direction</th>
       </tr>
     </thead>
@@ -47,22 +56,17 @@
 </div>
 
 <!-- Positions Table Gridjs-->
-<div class="p-3 mb-4 bg-light border rounded-3">
+<!--<div class="p-3 mb-4 bg-light border rounded-3">
   <h3 class="display-5 fw-bold">Positions Gridjs</h3>
-<!--  Total Return = {{ pnl }}-->
-  <div id="table"></div>
-<!--    <div class="container-fluid py-5 ">-->
-<!--      <h3 class="display-5 fw-bold">Positions</h3>-->
-<!--    </div>-->
-</div>
+  <div id="gridjs-table"></div>
+</div>-->
 
 <!-- Trades Table -->
 <div class="p-3 bg-light border rounded-3">
     <div class="container-fluid py-5 ">
       <h3 class="display-5 fw-bold">Trades</h3>
-
       <div class="table-responsive">
-        <table class="table table-dark table-hover">
+        <table id="trade-table" class="table table-dark table-hover">
           <thead>
             <tr>
               <th scope="col">#</th>
@@ -85,11 +89,11 @@
                 <td>{{ "${:,.2f}".format(trade.price) }}</td>
                 <td>{{ trade.qty }}</td>
                 <td>{{ trade.value }}</td>
-<!--<td>-->
-<!--  <a href="#tradeimg{{ trade._id }}" data-bs-target="#tradeimg{{ trade._id }}" data-bs-toggle="modal"> -->
-<!--    <img class="img" src="{{ trade.img }}" width="50"> -->
-<!--  </a>-->
-<!--</td>-->
+            <!--<td>
+                  <a href="#tradeimg{{ trade._id }}" data-bs-target="#tradeimg{{ trade._id }}" data-bs-toggle="modal">
+                  <img class="img" src="{{ trade.img }}" width="50">
+                  </a>
+                </td>-->
                 <td>
                   <a href="/">Edit</a>
                 </td>
@@ -100,75 +104,91 @@
       </div>
     </div>
 </div>
-
-<!-- Trade image modal -->
-<!--  {% for trade in trades %}-->
-<!--    <div class="modal" id="tradeimg{{trade._id}}" aria-hidden="true">-->
-<!--      <div class="modal-dialog modal-xl">-->
-<!--        <div class="modal-content">-->
-<!--          <div class="modal-header">-->
-<!--            <h3 class="modal-title fs-5">Setup for Trade {{trade._id}}</h3>-->
-<!--            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>-->
-<!--          </div>-->
-<!--          <div class="modal-body text-center">-->
-<!--              <img class="img-fluid" src="{{ trade.img }}" data-bs-toggle="modal">-->
-<!--          </div>-->
-<!--        </div>-->
-<!--      </div>-->
-<!--    </div>-->
-<!--  {% endfor %}-->
+<!-- Trade image modal
+  {% for trade in trades %}
+   <div class="modal" id="tradeimg{{trade._id}}" aria-hidden="true">
+      <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3 class="modal-title fs-5">Setup for Trade {{trade._id}}</h3>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body text-center">
+              <img class="img-fluid" src="{{ trade.img }}" data-bs-toggle="modal">
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endfor %}-->
 {% endblock %}
 
 {% block javascript %}
-<!--  {{ super() }}-->
-<script src="https://unpkg.com/bootstrap-table@1.21.2/dist/bootstrap-table.min.js"></script>
-<script>
+<!--  bootstrap-table script  -->
+<script type='text/javascript'>
+function buttons () {
+    return {
+      btnAdd: {
+        text: 'Add new row',
+        icon: 'bi bi-plus-lg',
+        event: function () {
+          alert('Do some stuff to e.g. add a new row')
+        },
+        attributes: {
+          title: 'Add a new trade'
+        }
+      }
+    }
+  }
 
-$('#posTable').bootstrapTable({
-  columns: [{
-    field: 'status',
-    title: 'Status'
-  }, {
-    field: 'date_open',
-    title: 'Date Opened'
-  }, {
-    field: 'symbol',
-    title: 'Symbol'
-  }, {
-    field: 'entry',
-    title: 'Entry'
-  }, {
-    field: 'exit',
-    title: 'Exit'
-  }, {
-    field: 'pnl',
-    title: 'Return'
-  }, {
-    field: 'price',
-    title: 'Price'
-  }, {
-    field: 'direction',
-    title: 'Direction'
-  }],
+function statusFormatter(value, row, index) {
+  if (value == 'Open') {
+    return '<span class="badge bg-warning">' + value + '</span>'
+  }
+  if (value == 'Win') {
+    return '<span class="badge bg-success">' + value + '</span>'
+  }
+  if (value == 'Loss') {
+    return '<span class="badge bg-danger">' + value + '</span>'
+  }
+}
 
-  data: [
-    {% for p in positions %}
+function pnlFormatter(value, row, index) {
+  var currency = value;
+  var number = Number(currency.replace(/[^0-9.-]+/g,""));
+  if (number < 0) {
+    return '<span class="text-danger fw-bold">' + value + '</span>'
+  } else if (number > 0) {
+    return '<span class="text-success fw-bold">' + value + '</span>'
+  } else {
+    return value
+  }
+}
+
+var $table = $('#pos-table')
+
+$(function() {
+  var data = [
+      {% for p in positions %}
       {
         status: '{{ p.status }}',
         date_open: '{{ p.date_open }}',
         symbol: '{{ p.symbol }}',
-        entry: '{{ "${:,.3f}".format(p.entry) }}',
-        exit: '{{ "${:,.3f}".format(p.exit) }}',
-        pnl: '{{ "${:,.3f}".format(p.pnl) }}',
-        price: '{{ "${:,.3f}".format(p.qty * (p.current_price - p.entry)) }}',
+        entry: '{{ "${:,.2f}".format(p.entry) }}',
+        exit: '{{ "${:,.2f}".format(p.exit) }}',
+        price: '{{ "${:,.2f}".format(p.current_price) }}',
+        pnl: '{{ "${:,.2f}".format( p.pnl + (p.qty * (p.current_price - p.entry)) ) }}',
         direction: '{{ p.direction }}'
       },
-    {% endfor %}
+      {% endfor %}
     ]
+    $table.bootstrapTable({data: data})
 })
+
+
 </script>
 
-<script>
+<!--gridjs table script-->
+<!--<script>
   new gridjs.Grid({
   columns: [
     { id: 'status', name: 'Status' },
@@ -201,8 +221,8 @@ $('#posTable').bootstrapTable({
   sort: true,
   pagination: true,
 
-  }).render(document.getElementById('table'));
-</script>
+  }).render(document.getElementById('gridjs-table'));
+</script>-->
 {% endblock %}
 
 

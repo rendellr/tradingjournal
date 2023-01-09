@@ -128,7 +128,10 @@ def add_trade(trade):
             if openpos.qty * trade.price < threshold_value:
                 # print(f'Trade quantity zero, closing position {openpos}')
                 openpos.qty = 0
-                openpos.status = 'Closed'
+                if openpos.pnl > 0:
+                    openpos.status = 'Win'
+                else:
+                    openpos.status = 'Loss'
 
             # TODO: If new trade reduces qty past 0, throw error about selling/buying more than available
 
