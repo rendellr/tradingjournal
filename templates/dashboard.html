@@ -3,15 +3,15 @@
 {% block content %}
 <!-- Portfolio Summary Cards -->
 <div class="row">
-    <div class="col-md-6 mb-4">
-      <div class="h-100 p-3 text-bg-dark rounded-3">
+    <div class="col-md-6 mb-2">
+      <div class="h-100 p-3 border rounded-3">
         <h2 class="fw-bold">Portfolio Stats</h2>
         <p>Value, Number of Trades, Win Rate, Short vs Long</p>
-        <button class="btn btn-outline-light" type="button">Example button</button>
+        <button class="btn btn-outline btn-outline-secondary" type="button">Example button</button>
       </div>
     </div>
-    <div class="col-md-6 mb-4">
-      <div class="h-100 p-3 bg-light border rounded-3">
+    <div class="col-md-6 mb-2">
+      <div class="h-100 p-3 border rounded-3">
         <h2 class="fw-bold">Open Positions Pie Chart</h2>
         <p></p>
         <button class="btn btn-outline-secondary" type="button">Example button</button>
@@ -20,7 +20,7 @@
 </div>
 
 <!-- Portfolio Value Graph-->
-<div class="p-3 mb-4 bg-light border rounded-3">
+<div class="p-2 mb-2 border rounded-3">
     <div class="container-fluid py-5">
       <h3 class="fw-bold">Portfolio Value Chart</h3>
       <button class="btn btn-primary btn-lg" type="button">Example button</button>
@@ -28,7 +28,7 @@
 </div>
 
 <!-- Positions Table bootstrap-table-->
-<div class="p-3 mb-4 bg-light border rounded-3">
+<div class="p-3 mb-2 border rounded-3">
   <h3 class="fw-bold">Positions</h3>
   <div class="toolbar"></div>
   <table
@@ -38,18 +38,18 @@
     data-show-refresh="true"
     data-buttons="buttons"
     data-pagination="true"
-    class="table-sm table-bordered"
+    class="table-sm"
     >
     <thead>
       <tr>
-        <th data-field="status" data-formatter="statusFormatter">Status</th>
+        <th data-field="status" data-formatter="statusFormatter" data-align="center">Status</th>
         <th data-field="date_open">Date Opened</th>
         <th data-field="symbol">Symbol</th>
         <th data-field="entry">Entry</th>
         <th data-field="exit">Exit</th>
         <th data-field="price">Price</th>
-        <th data-field="pnl" data-formatter="pnlFormatter">Return</th>
-        <th data-field="direction">Direction</th>
+        <th data-field="pnl" data-formatter="pnlFormatter" data-align="center">Return</th>
+        <th data-field="direction" data-align="center">Direction</th>
       </tr>
     </thead>
   </table>
@@ -61,8 +61,36 @@
   <div id="gridjs-table"></div>
 </div>-->
 
-<!-- Trades Table -->
-<div class="p-3 bg-light border rounded-3">
+<!-- Trades Table bootstrap-table-->
+<div class="p-3 mb-2 border rounded-3">
+  <h3 class="fw-bold">Trades</h3>
+  <div class="toolbar"></div>
+  <table
+    id="trade-table"
+    data-toggle="true"
+    data-show-columns="true"
+    data-show-refresh="true"
+    data-buttons="buttons"
+    data-pagination="true"
+    class="table-sm"
+    >
+    <thead>
+      <tr>
+        <th data-field="number" data-formatter="statusFormatter" data-align="center">Status</th>
+        <th data-field="date">Date</th>
+        <th data-field="type">Type</th>
+        <th data-field="symbol">Entry</th>
+        <th data-field="price">Price</th>
+        <th data-field="qty">Position Size</th>
+        <th data-field="value">Value</th>
+        <th data-field="links" data-align="center"></th>
+      </tr>
+    </thead>
+  </table>
+</div>
+
+<!-- Trades Table HTML Bootstrap-->
+{# <div class="p-3 border rounded-3">
     <div class="container-fluid py-5 ">
       <h3 class="display-5 fw-bold">Trades</h3>
       <div class="table-responsive">
@@ -103,7 +131,7 @@
         </table>
       </div>
     </div>
-</div>
+</div> #}
 <!-- Trade image modal
   {% for trade in trades %}
    <div class="modal" id="tradeimg{{trade._id}}" aria-hidden="true">
@@ -139,7 +167,7 @@ function buttons () {
       }
     }
   }
-
+{#  #}
 function statusFormatter(value, row, index) {
   if (value == 'Open') {
     return '<span class="badge bg-warning">' + value + '</span>'
@@ -164,10 +192,11 @@ function pnlFormatter(value, row, index) {
   }
 }
 
-var $table = $('#pos-table')
+var $pos_table = $('#pos-table')
+var $trade_table = $('#trade-table')
 
 $(function() {
-  var data = [
+  var pos_data = [
       {% for p in positions %}
       {
         status: '{{ p.status }}',
@@ -181,9 +210,29 @@ $(function() {
       },
       {% endfor %}
     ]
-    $table.bootstrapTable({data: data})
+
+    var trade_data = [
+      {% for t in trades %}
+      {
+        number: '{{ t.id }}',
+        date: '{{ t.date }}',
+        type: '{{ t.type }}',
+        symbol: '{{ t.symbol }}',
+        price: '{{ "${:,.2f}".format(t.price) }}',
+        qty: '{{ "{:,.2f}".format(t.qty) }}',
+        value: '{{ "${:,.2f}".format(t.value) }}',
+        links: ''
+      },
+      {% endfor %}
+    ]
+
+    $pos_table.bootstrapTable({data: pos_data})
+    $trade_table.bootstrapTable({data: trade_data})
 })
 
+$(document).ready(function(){
+  $("table").removeClass("table-bordered");
+});
 
 </script>
 

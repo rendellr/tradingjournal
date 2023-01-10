@@ -38,6 +38,17 @@ class Position(db.Model):
     def __repr__(self):
         return f'<{self.symbol} Position {self._id}>'
 
+    def to_dict(self):
+        return {
+            'status': self.status,
+            'date_open': self.date_open,
+            'symbol': self.symbol,
+            'entry': self.entry,
+            'exit': self.exit,
+            'current_price': self.current_price,
+            'pnl': self.pnl,
+            'direction': self.direction
+        }
 
 class Trade(db.Model):
     __tablename__ = 'trade'

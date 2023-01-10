@@ -71,7 +71,7 @@ def dashboard():
                     'direction': p.direction
                 }
             )
-        return render_template('dashboard.html', trades=trades, positions=positions, data=pos_data, columns=columns)
+        return render_template('dashboard.html', trades=trades, positions=positions, data=pos_data)
 
 @app.route('/importcsv', methods=['POST', 'GET'])
 def importcsv():
